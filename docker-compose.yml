@@ -24,7 +24,7 @@ services:
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
     networks:
-      - elk
+      - elknet
 
   logstash:
     build:
@@ -48,7 +48,7 @@ services:
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - elk
+      - elknet
     depends_on:
       - elasticsearch
 
@@ -65,12 +65,27 @@ services:
     ports:
       - "5601:5601"
     networks:
-      - elk
+      - elknet
     depends_on:
       - elasticsearch
 
+  caddy:
+    image: caddy:2.4.2-alpine
+    volumes:
+      - type: bind
+        source: ./caddy/Caddyfile
+        target: /etc/caddy/Caddyfile
+        read_only: true    
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - elknet
+    depends_on:
+      - kibana
+
 networks:
-  elk:
+  elknet:
     driver: bridge
 
 volumes:
