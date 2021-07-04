@@ -25,7 +25,8 @@ services:
       discovery.type: single-node
     networks:
       - elknet
-
+    restart: on-failure
+  
   logstash:
     build:
       context: logstash/
@@ -51,7 +52,8 @@ services:
       - elknet
     depends_on:
       - elasticsearch
-
+    restart: on-failure
+  
   kibana:
     build:
       context: kibana/
@@ -68,6 +70,8 @@ services:
       - elknet
     depends_on:
       - elasticsearch
+      - logstash
+    restart: on-failure
 
   caddy:
     image: caddy:2.4.2-alpine
@@ -83,6 +87,7 @@ services:
       - elknet
     depends_on:
       - kibana
+    restart: on-failure
 
 networks:
   elknet:
